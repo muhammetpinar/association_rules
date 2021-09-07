@@ -4,7 +4,7 @@ output:
     df_print: paged
   pdf_document: default
 ---
-. MODÜLLERÝN AKTÝF EDÝLMESÝ
+. # MODÃœLLERÄ°N AKTÄ°F EDÄ°LMESÄ°
 
 ```{r}
 library(tidyverse)
@@ -16,7 +16,7 @@ library(lubridate)
 library(plyr)
 ```
 
-VERÝ SETÝNÝN OKUT?LMASI VE HIZLI KEÞÝF
+VERÄ° SETÄ°NÄ°N OKUT?LMASI VE HIZLI KEÅžÄ°F
 ```{r}
 groceries <- read.csv("C:/Users/muham/Desktop/Groceries_dataset.csv")
 head(groceries)
@@ -26,7 +26,7 @@ KAYIP VERI VAR MI, NE KADAR
 ```{r}
 sum(is.na(groceries))
 ```
-MEMBERNUMBER DEGÝÞKENÝNE GORE SIRALAYIP, MEMBERNUMBER D?GÝÞKENÝNÝ NUMERÝC YAPMA VE AYNI GUN VE AYNI KISI TARAFINDAN YAPILMIS ALISVERISE GORE ITEMLERI LISTELEME
+MEMBERNUMBER DEGÄ°ÅžKENÄ°NE GORE SIRALAYIP, MEMBERNUMBER D?GÄ°ÅžKENÄ°NÄ° NUMERÄ°C YAPMA VE AYNI GUN VE AYNI KISI TARAFINDAN YAPILMIS ALISVERISE GORE ITEMLERI LISTELEME
 ```{r}
 sorted <- groceries[order(groceries$Member_number),]
 sorted$Member_number <- as.numeric(sorted$Member_number)
@@ -34,22 +34,22 @@ itemList <- ddply(sorted, c("Member?number","Date"),  function(df1)paste(df1$ite
 head(itemList,15)
 
 ```
-TARÝH VE MEMBERNUMBER DEGÝÞKENÝNÝ SÝLME ÝÞLEMÝ
+TARÄ°H VE MEMBERNUMBER DEGÄ°ÅžKENÄ°NÄ° SÄ°LME Ä°ÅžLEMÄ°
 ```{r}
 itemList$Member_number <- NULL
 itemList$Date <- NULL
 colnames(itemList) <- c("itemList")
 head(itemList,15?
 ```
-ANALÝZ YAPABÝLMEK ÝÇÝN TEKRAR GERÝ GETÝRECEÐÝMÝZ CSV DOSYASINI DISARI YAZDIRMA ÝÞLEMÝ
+ANALÄ°Z YAPABÄ°LMEK Ä°Ã‡Ä°N TEKRAR GERÄ° GETÄ°RECEÄžÄ°MÄ°Z CSV DOSYASINI DISARI YAZDIRMA Ä°ÅžLEMÄ°
 ```{r}
 write.csv(itemList,"ItemList.csv", quote = FALSE, row.names = TRUE)
 
 ```
-TRANSACTÝoN DOSYASI OLARAK TEKRAR ÇAÐIRMA
+TRANSACTÄ°oN DOSYASI OLARAK TEKRAR Ã‡AÄžIRMA
 ```{r}
 trans = read.transactions(file="C:/U?ers/muham/Desktop/ItemList.csv", rm.duplicates= TRUE, format="basket",sep=",",cols=1);
-prýnt(trans)
+prÄ±nt(trans)
 ```
 TIRNAKLARI SILME
 ```{r}
