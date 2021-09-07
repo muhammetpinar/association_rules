@@ -1,0 +1,124 @@
+---
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+. MODÜLLERÝN AKTÝF EDÝLMESÝ
+
+```{r}
+library(tidyverse)
+library(arules)
+library(arulesViz)
+library(knitr)
+library(gridExtra)
+library(lubridate)
+library(plyr)
+```
+
+VERÝ SETÝNÝN OKUT?LMASI VE HIZLI KEÞÝF
+```{r}
+groceries <- read.csv("C:/Users/muham/Desktop/Groceries_dataset.csv")
+head(groceries)
+sum(is.na(groceries))
+```
+KAYIP VERI VAR MI, NE KADAR
+```{r}
+sum(is.na(groceries))
+```
+MEMBERNUMBER DEGÝÞKENÝNE GORE SIRALAYIP, MEMBERNUMBER D?GÝÞKENÝNÝ NUMERÝC YAPMA VE AYNI GUN VE AYNI KISI TARAFINDAN YAPILMIS ALISVERISE GORE ITEMLERI LISTELEME
+```{r}
+sorted <- groceries[order(groceries$Member_number),]
+sorted$Member_number <- as.numeric(sorted$Member_number)
+itemList <- ddply(sorted, c("Member?number","Date"),  function(df1)paste(df1$itemDescription,collapse = ","))
+head(itemList,15)
+
+```
+TARÝH VE MEMBERNUMBER DEGÝÞKENÝNÝ SÝLME ÝÞLEMÝ
+```{r}
+itemList$Member_number <- NULL
+itemList$Date <- NULL
+colnames(itemList) <- c("itemList")
+head(itemList,15?
+```
+ANALÝZ YAPABÝLMEK ÝÇÝN TEKRAR GERÝ GETÝRECEÐÝMÝZ CSV DOSYASINI DISARI YAZDIRMA ÝÞLEMÝ
+```{r}
+write.csv(itemList,"ItemList.csv", quote = FALSE, row.names = TRUE)
+
+```
+TRANSACTÝoN DOSYASI OLARAK TEKRAR ÇAÐIRMA
+```{r}
+trans = read.transactions(file="C:/U?ers/muham/Desktop/ItemList.csv", rm.duplicates= TRUE, format="basket",sep=",",cols=1);
+prýnt(trans)
+```
+TIRNAKLARI SILME
+```{r}
+trans@itemInfo$labels <- gsub("\"","",trans@itemInfo$labels)
+trans
+```
+KURALLARI VERILEN DESTEK VE GUVEN DEGERIYLE OLUSTURMA ISL?MI
+```{r}
+basket_rules <- apriori(trans, parameter = list(minlen=2, sup = 0.005, conf = 0.1, target="rules"))
+
+```
+KAC TANE KURAL OLUSTU
+```{r}
+print(length(basket_rules))
+```
+MODELIN OLCUTLERININ ISTATISTIKSEL DEGERLERI
+```{r}
+summary(basket_rules)
+
+```
+I?K 5 KURAL
+
+```{r}
+inspect(basket_rules[1:5])
+```
+YORUMLAR = 3.kural incelendiginde ;
+1) Support degeri incelendiginde Alisveriste hem gazete hem de yagli sutun birarada bulunma olasiligi 0.006`dir. 
+2) Covarage = Oncul Destegi/ Toplam ORneklemdir. Covarage?incelendiginde 0.04 bulunmustur ve bu bize onculun yani gazetenin tek basina gorulme olasiligini ifade eder. 
+3) Confidence = Ne kadar buyukse o kadar ilginctir. 0.14 degeri bize gazete alindiktan sonra %14 ihtimalle sut alinacagini gosterir.
+4) lift deger? incelendiginde 0.91 bulunmustur. Bu bize ikame urunler oldugu gosterir.
+5) gazete alanlarin daha sonra sut almasi veri setinde 84 defa gozlemlenmistir.
+
+GRAFIKLER
+
+```{r}
+plot(basket_rules, method = "grouped", control = list(k = 5))
+```
+ORNEK YORUM:
+frank?urter alan kisilerin diger sebzelerdende aldigi gozlemlenmektedir ve lift parlakligi incelendiginde 1 den fazla oldugu icin tamamlayaci urunler oldugunuda soyleyebilirz.
+
+
+
+```{r}
+plot(basket_rules[1:10], method="graph")
+
+```
+ORNEK YORUM: Frankfurter alan ?isilerin hem sut hem de diger sebzelerden aldigini soyleyebilirz.
+
+
+```{r}
+plot(basket_rules[1:4], method="paracoord")
+
+```
+YORUM : Gazete alanlar sutte almistir. Yumurta alanlar sutte almistir.
+
+EN COK GOZLENEN 10 URUN
+```{r}
+itemFrequencyPlot(trans, topN?= 10)
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
