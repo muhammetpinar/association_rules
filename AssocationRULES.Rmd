@@ -4,7 +4,7 @@ output:
     df_print: paged
   pdf_document: default
 ---
-. # MODÜLLERİN AKTİF EDİLMESİ
+# MODÜLLERİN AKTİF EDİLMESİ
 
 ```{r}
 library(tidyverse)
@@ -16,17 +16,17 @@ library(lubridate)
 library(plyr)
 ```
 
-VERİ SETİNİN OKUT?LMASI VE HIZLI KEŞİF
+## VERİ SETİNİN OKUTULMASI VE HIZLI KEŞİF
 ```{r}
 groceries <- read.csv("C:/Users/muham/Desktop/Groceries_dataset.csv")
 head(groceries)
 sum(is.na(groceries))
 ```
-KAYIP VERI VAR MI, NE KADAR
+## KAYIP VERI VAR MI, NE KADAR
 ```{r}
 sum(is.na(groceries))
 ```
-MEMBERNUMBER DEGİŞKENİNE GORE SIRALAYIP, MEMBERNUMBER D?GİŞKENİNİ NUMERİC YAPMA VE AYNI GUN VE AYNI KISI TARAFINDAN YAPILMIS ALISVERISE GORE ITEMLERI LISTELEME
+### MEMBERNUMBER DEGİŞKENİNE GORE SIRALAYIP, MEMBERNUMBER D?GİŞKENİNİ NUMERİC YAPMA VE AYNI GUN VE AYNI KISI TARAFINDAN YAPILMIS ALISVERISE GORE ITEMLERI LISTELEME
 ```{r}
 sorted <- groceries[order(groceries$Member_number),]
 sorted$Member_number <- as.numeric(sorted$Member_number)
@@ -34,61 +34,62 @@ itemList <- ddply(sorted, c("Member?number","Date"),  function(df1)paste(df1$ite
 head(itemList,15)
 
 ```
-TARİH VE MEMBERNUMBER DEGİŞKENİNİ SİLME İŞLEMİ
+### TARİH VE MEMBERNUMBER DEGİŞKENİNİ SİLME İŞLEMİ
 ```{r}
 itemList$Member_number <- NULL
 itemList$Date <- NULL
 colnames(itemList) <- c("itemList")
 head(itemList,15?
 ```
-ANALİZ YAPABİLMEK İÇİN TEKRAR GERİ GETİRECEĞİMİZ CSV DOSYASINI DISARI YAZDIRMA İŞLEMİ
+### ANALİZ YAPABİLMEK İÇİN TEKRAR GERİ GETİRECEĞİMİZ CSV DOSYASINI DISARI YAZDIRMA İŞLEMİ
 ```{r}
 write.csv(itemList,"ItemList.csv", quote = FALSE, row.names = TRUE)
 
 ```
-TRANSACTİoN DOSYASI OLARAK TEKRAR ÇAĞIRMA
+## TRANSACTİoN DOSYASI OLARAK TEKRAR ÇAĞIRMA
 ```{r}
 trans = read.transactions(file="C:/U?ers/muham/Desktop/ItemList.csv", rm.duplicates= TRUE, format="basket",sep=",",cols=1);
 prınt(trans)
 ```
-TIRNAKLARI SILME
+### TIRNAKLARI SILME
 ```{r}
 trans@itemInfo$labels <- gsub("\"","",trans@itemInfo$labels)
 trans
 ```
-KURALLARI VERILEN DESTEK VE GUVEN DEGERIYLE OLUSTURMA ISL?MI
+### KURALLARI VERILEN DESTEK VE GUVEN DEGERIYLE OLUSTURMA ISLEMI
 ```{r}
 basket_rules <- apriori(trans, parameter = list(minlen=2, sup = 0.005, conf = 0.1, target="rules"))
 
 ```
-KAC TANE KURAL OLUSTU
+### KAC TANE KURAL OLUSTU
 ```{r}
 print(length(basket_rules))
 ```
-MODELIN OLCUTLERININ ISTATISTIKSEL DEGERLERI
+### MODELIN OLCUTLERININ ISTATISTIKSEL DEGERLERI
 ```{r}
 summary(basket_rules)
 
 ```
-I?K 5 KURAL
+## ILK 5 KURAL
 
 ```{r}
 inspect(basket_rules[1:5])
 ```
-YORUMLAR = 3.kural incelendiginde ;
-1) Support degeri incelendiginde Alisveriste hem gazete hem de yagli sutun birarada bulunma olasiligi 0.006`dir. 
-2) Covarage = Oncul Destegi/ Toplam ORneklemdir. Covarage?incelendiginde 0.04 bulunmustur ve bu bize onculun yani gazetenin tek basina gorulme olasiligini ifade eder. 
-3) Confidence = Ne kadar buyukse o kadar ilginctir. 0.14 degeri bize gazete alindiktan sonra %14 ihtimalle sut alinacagini gosterir.
-4) lift deger? incelendiginde 0.91 bulunmustur. Bu bize ikame urunler oldugu gosterir.
-5) gazete alanlarin daha sonra sut almasi veri setinde 84 defa gozlemlenmistir.
+# YORUMLAR = 3.kural incelendiginde ;
+## 1) Support degeri incelendiginde Alisveriste hem gazete hem de yagli sutun birarada bulunma olasiligi 0.006`dir. 
+## 2) Covarage = Oncul Destegi/ Toplam ORneklemdir. Covarage?incelendiginde 0.04 bulunmustur ve bu bize onculun yani gazetenin tek basina gorulme olasiligini ifade eder. 
+## 3) Confidence = Ne kadar buyukse o kadar ilginctir. 0.14 degeri bize gazete alindiktan sonra %14 ihtimalle sut alinacagini gosterir.
+## 4) lift deger? incelendiginde 0.91 bulunmustur. Bu bize ikame urunler oldugu gosterir.
+## 5) gazete alanlarin daha sonra sut almasi veri setinde 84 defa gozlemlenmistir.
 
-GRAFIKLER
+# GRAFIKLER
 
 ```{r}
 plot(basket_rules, method = "grouped", control = list(k = 5))
 ```
+! http://127.0.0.1:20266/chunk_output/s/56D9A9F1/cr4ffxohh0brj/000002.png
 ORNEK YORUM:
-frank?urter alan kisilerin diger sebzelerdende aldigi gozlemlenmektedir ve lift parlakligi incelendiginde 1 den fazla oldugu icin tamamlayaci urunler oldugunuda soyleyebilirz.
+frankfurter alan kisilerin diger sebzelerdende aldigi gozlemlenmektedir ve lift parlakligi incelendiginde 1 den fazla oldugu icin tamamlayaci urunler oldugunuda soyleyebilirz.
 
 
 
